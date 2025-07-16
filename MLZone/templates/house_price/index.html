@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}House Price Prediction{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-2 py-2">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800/60 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        <form id="priceForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Input Fields -->
+            <div>
+                <label for="area" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Area (sq. ft.)</label>
+                <input type="number" name="area" id="area" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 1500">
+            </div>
+            <div>
+                <label for="bedrooms" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bedrooms</label>
+                <input type="number" name="bedrooms" id="bedrooms" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 3">
+            </div>
+            <div>
+                <label for="bathrooms" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bathrooms</label>
+                <input type="number" name="bathrooms" id="bathrooms" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 2">
+            </div>
+            <div>
+                <label for="stories" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stories</label>
+                <input type="number" name="stories" id="stories" required class="mt-1 block w-full p-3 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., 2">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="md:col-span-2 text-center mt-6">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">Predict Price</button>
+            </div>
+        </form>
+
+        <!-- Prediction Result -->
+        <div id="prediction-output" class="hidden mt-8 text-center p-6 bg-gray-100 dark:bg-gray-900/80 rounded-xl shadow-inner border border-gray-200 dark:border-gray-700">
+            <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4">Predicted Price:</h2>
+            <p id="predictionResult" class="text-5xl font-bold text-indigo-600 dark:text-indigo-400"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('priceForm');
+    const predictionOutput = document.getElementById('prediction-output');
+    const predictionResult = document.getElementById('predictionResult');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        predictionResult.textContent = 'Calculating...';
+        predictionOutput.classList.remove('hidden');
+
+        try {
+            const response = await fetch('/tasks/house-price/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(result.prediction);
+            predictionResult.textContent = formattedPrice;
+
+        } catch (error) {
+            console.error('Prediction error:', error);
+            predictionResult.textContent = 'Error';
+        }
+    });
+});
+</script>
+{% endblock %}

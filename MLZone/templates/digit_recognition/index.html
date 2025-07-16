@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Digit Recognition{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-2">
+
+    <div class="bg-white dark:bg-gray-800/60 p-8 rounded-2xl shadow-xl backdrop-blur-sm mt-2 border border-gray-200 dark:border-gray-700">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            
+            <!-- Canvas Section -->
+            <div class="flex flex-col items-center">
+                <canvas id="digitCanvas" width="280" height="280" class="bg-gray-900 dark:bg-black rounded-lg mx-auto shadow-inner cursor-crosshair border-4 border-gray-700 dark:border-gray-600"></canvas>
+                <div class="flex space-x-4 mt-6">
+                    <button id="predictBtn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105 shadow-lg">Predict</button>
+                    <button id="clearBtn" class="w-full bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg">Clear</button>
+                </div>
+            </div>
+
+            <!-- Prediction Section -->
+            <div class="text-center">
+                <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-300 mb-4">Prediction:</h2>
+                <div id="predictionResult" class="text-8xl font-bold text-indigo-600 dark:text-indigo-400 h-28 flex items-center justify-center">
+                    ?
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('digitCanvas');
+        const ctx = canvas.getContext('2d');
+        const predictBtn = document.getElementById('predictBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const predictionResult = document.getElementById('predictionResult');
+
+        let isDrawing = false;
+
+        // Set canvas background and drawing style
+        function setCanvasStyle() {
+            if (document.documentElement.classList.contains('dark')) {
+                ctx.fillStyle = "black";
+                ctx.strokeStyle = 'white';
+            } else {
+                ctx.fillStyle = "white";
+                ctx.strokeStyle = 'black';
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 20;
+        }
+
+        setCanvasStyle();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        function getMousePos(canvas, evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getMousePos(canvas, e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getMousePos(canvas, e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function clearCanvas() {
+            setCanvasStyle();
+            predictionResult.textContent = '?';
+        }
+
+        async function predictDigit() {
+            const imageDataUrl = canvas.toDataURL('image/png');
+            predictionResult.textContent = '...';
+
+            try {
+                const response = await fetch('/tasks/digit-recognition/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ image_data: imageDataUrl })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                predictionResult.textContent = data.prediction;
+
+            } catch (error) {
+                console.error('Prediction error:', error);
+                predictionResult.textContent = 'Error';
+            }
+        }
+
+        // Event Listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        clearBtn.addEventListener('click', clearCanvas);
+        predictBtn.addEventListener('click', predictDigit);
+
+        // Listen for theme changes to update canvas
+        new MutationObserver((mutations) => {
+            mutations.forEach(mutation => {
+                if (mutation.attributeName === 'class') {
+                    clearCanvas();
+                }
+            });
+        }).observe(document.documentElement, { attributes: true });
+    });
+</script>
+{% endblock %}
