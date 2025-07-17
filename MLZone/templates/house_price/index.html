@@ -40,43 +40,43 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('priceForm');
-    const predictionOutput = document.getElementById('prediction-output');
-    const predictionResult = document.getElementById('predictionResult');
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('priceForm');
+        const predictionOutput = document.getElementById('prediction-output');
+        const predictionResult = document.getElementById('predictionResult');
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
 
-        predictionResult.textContent = 'Calculating...';
-        predictionOutput.classList.remove('hidden');
+            predictionResult.textContent = 'Calculating...';
+            predictionOutput.classList.remove('hidden');
 
-        try {
-            const response = await fetch('/tasks/house-price/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify(data)
-            });
+            try {
+                const response = await fetch('/tasks/house-price/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(data)
+                });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(result.prediction);
+                predictionResult.textContent = formattedPrice;
+
+            } catch (error) {
+                console.error('Prediction error:', error);
+                predictionResult.textContent = 'Error';
             }
-
-            const result = await response.json();
-            const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(result.prediction);
-            predictionResult.textContent = formattedPrice;
-
-        } catch (error) {
-            console.error('Prediction error:', error);
-            predictionResult.textContent = 'Error';
-        }
+        });
     });
-});
 </script>
 {% endblock %}
