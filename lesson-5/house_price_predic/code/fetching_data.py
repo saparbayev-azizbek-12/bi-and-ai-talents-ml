@@ -1,71 +1,75 @@
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from bs4 import BeautifulSoup
-import os
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 import time
-import pandas as pd
+import csv
 
-# Set up Selenium
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")  # optional: don't open a window
-driver = webdriver.Chrome(service=Service("chromedriver.exe"), options=options)
+options = Options()
+options.add_argument("--ignore-certificate-errors")
+options.add_argument('--disable-gpu')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-blink-features=AutomationControlled')
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option('useAutomationExtension', False)
+options.add_argument('--user-agent=Mozilla/50 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
-# Start URL (you can change filters as needed)
-url = "https://www.olx.uz/oz/nedvizhimost/doma/prodazha/?currency=UZS&page=2&search%5Bfilter_enum_location%5D%5B0%5D=1&search%5Bfilter_enum_private_house_type%5D%5B0%5D=1&search%5Bfilter_enum_private_house_type%5D%5B1%5D=5"
+service = Service()
+driver = webdriver.Chrome(service=service, options=options)
+driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
-# Store results
-all_listings = []
+base_url = "https://www.olx.uz/oz/nedvizhimost/doma/prodazha/tashkent/"
+params = "?currency=UZS&search%5Bfilter_enum_private_house_type%5D%5B0%5D=1&search%5Bfilter_enum_private_house_type%5D%5B1%5D=3&search%5Bfilter_enum_private_house_type%5D%5B2%5D=2&search%5Bfilter_enum_private_house_type%5D%5B3%5D=5&search%5Bfilter_enum_private_house_type%5D%5B4%5D=6&search%5Bfilter_enum_location%5D%5B0%5D=1"
 
-# Loop through pages
+page = 1
+all_ads = []
+
 while True:
+    url = f"{base_url}?page={page}&{params[1:]}"
+    print(f"✅ Sahifa {page} yuklanyapti: {url}")
     driver.get(url)
-    time.sleep(2)  # wait for JS to load content
+    time.sleep(3)
 
-    # Parse page source
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    
-    # --- Find listings on the current page ---
-    listings = soup.find_all("div", class_="css-1sw7q4x")  # You may need to inspect actual class name
-
-    for item in listings:
-        title = item.find("span", class_="css-6as4g5")
-        price = item.find("p", class_="css-uj7mm0")
-        address = item.find("p", class_="css-vbz67q")
-        is_featured = item.find("p", class_="css-vbz67q")
-
-        all_listings.append({
-            "title": title.get_text(strip=True) if title else "",
-            "price": price.get_text(strip=True) if price else "",
-            "address": address.get_text(strip=True) if address else ""
-        })
-
-    # --- Try to click "Next" button ---
-    try:
-        next_button = driver.find_element(By.CSS_SELECTOR, '[data-testid="pagination-forward"]')
-        url = next_button.get_attribute("href")
-        if not url:
-            break
-    except:
-        print("No more pages.")
+    ads = driver.find_elements(By.CSS_SELECTOR, 'div[data-testid="listing-grid"] > div[data-cy="l-card"]')
+    if not ads:
+        print("❌ E’lon topilmadi. Tugadi.")
         break
 
-# Append or create data
-file_path = '../data/domuz_listings.csv'
-new_data = pd.DataFrame(all_listings)
+    print(f"🔹 Sahifa {page} — {len(ads)} ta e’lon topildi.")
+    
+    for ad in ads:
+        try:
+            title_elem = ad.find_element(By.CSS_SELECTOR, 'h4')
+            link_elem = ad.find_element(By.CSS_SELECTOR, 'a')
 
-if os.path.exists(file_path):
-    old_data = pd.read_csv(file_path)
+            ad_data = {
+                "title": title_elem.text,
+                "link": link_elem.get_attribute('href'),
+            }
+            all_ads.append(ad_data)
+        except:
+            continue
+    if all_ads:
+        for ad in all_ads[:5]:
+            print(ad)
+    else:
+        print("❌ E’lon topilmadi. Tugadi.")
 
-    # Combine and remove duplicates (based on square + price + address)
-    combined = pd.concat([old_data, new_data], ignore_index=True)
-    combined = combined.drop_duplicates(subset=["square", "price", "address"])
+    if page == 25:
+        break
 
-    # Save back to the same file
-    combined.to_csv(file_path, index=False, encoding='utf-8-sig')
-else:
-    new_data.to_csv(file_path, index=False, encoding='utf-8-sig')
-print(new_data.head())
+    page += 1
+    time.sleep(2)
 
-# Close driver
 driver.quit()
+
+print(f"\n🔍 Umumiy yig‘ilgan e’lonlar soni: {len(all_ads)}")
+
+with open('ads.csv', 'w', newline='', encoding='utf-8') as file:
+    writer = csv.writer(file)
+    writer.writerow(['title', 'link'])
+    for ad in all_ads:
+        writer.writerow([ad['title'], ad['link']])
+
+for ad in all_ads[:5]:
+    print(ad)
