@@ -6,6 +6,7 @@ class DecisionTreeClassifierCustom:
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.tree = None
+        self.n_classes_ = 3
 
 
     def _gini(self, y):
@@ -19,6 +20,7 @@ class DecisionTreeClassifierCustom:
         split_idx = None
         split_threshold = None
 
+        child_gini = 0
         parent_gini = self._gini(y)
         n_features = X.shape[1]
 
@@ -45,7 +47,7 @@ class DecisionTreeClassifierCustom:
                     split_idx = feature
                     split_threshold = threshold
 
-        return split_idx, split_threshold, best_gain
+        return split_idx, split_threshold, best_gain, child_gini
     
 
     def _build_tree(self, X, y, depth=0):
@@ -54,6 +56,11 @@ class DecisionTreeClassifierCustom:
         """
         num_samples = X.shape[0]
         num_classes = len(np.unique(y))
+        values = np.bincount(y, minlength=self.n_classes_)  # har bir klassdagi sonlar
+
+
+        # Find best split
+        feature_idx, threshold, gain, gini = self._best_split(X, y)
 
         # Stop condition
         if (
@@ -64,17 +71,21 @@ class DecisionTreeClassifierCustom:
             leaf_value = np.bincount(y).argmax()
             return {
                 "leaf": True,
-                "class": leaf_value
+                "class": leaf_value,
+                "gini": gini,
+                "samples": num_samples,
+                "values": values.tolist()
             }
         
-        # Find best split
-        feature_idx, threshold, gain = self._best_split(X, y)
 
         if gain <= 0:
             leaf_value = np.bincount(y).argmax()
             return {
                 "leaf": True,
-                "class": leaf_value
+                "class": leaf_value,
+                "gini": gini,
+                "samples": num_samples,
+                "values": values.tolist()
             }
         
         # Split
@@ -89,7 +100,10 @@ class DecisionTreeClassifierCustom:
             "feature": feature_idx,
             "threshold": threshold,
             "left": left_subtree,
-            "right": right_subtree
+            "right": right_subtree,
+            "gini": gini,
+            "samples": num_samples,
+            "values": values.tolist()
         }
 
 
@@ -111,46 +125,3 @@ class DecisionTreeClassifierCustom:
 
     def predict(self, X):
         return np.array([self._predict_one(x, self.tree) for x in np.array(X)])
-
-from sklearn.datasets import load_iris
-from sklearn.tree import DecisionTreeClassifier
-
-iris = load_iris(as_frame=True)
-X = iris.data[['petal length (cm)', 'petal width (cm)']] # type: ignore
-y = iris.target # type: ignore
-
-
-tree_clf = DecisionTreeClassifier(max_depth=3, random_state=42)
-tree_clf.fit(X, y)
-
-y.values
-pred1 = tree_clf.predict(X)
-
-tree_clf2 = DecisionTreeClassifierCustom(max_depth=3)
-tree_clf2.fit(X, y)
-pred2 = tree_clf2.predict(X)
-
-from sklearn.metrics import mean_squared_error
-
-mse_sklearn = mean_squared_error(y, pred1)
-mse_custom = mean_squared_error(y, pred2)
-
-print("Sklearn Tree MSE:", mse_sklearn)
-print("Custom Tree MSE:", mse_custom)
-
-# tree = {
-#     "leaf": False,
-#     "left": {
-#         "left": {
-#             "leaf": True
-#         },
-#         "right": {
-#             "leaf": False,
-
-#         },
-#     },
-#     "right": {
-#         "left": {},
-#         "right": {}
-#     }
-# }
