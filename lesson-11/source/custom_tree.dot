@@ -1,175 +1,123 @@
 digraph {
-	graph [bb="0,0,671.38,580",
-		nodesep=0.3,
+	graph [bb="0,0,587,453.5",
+		nodesep=0.7,
 		rankdir=TB,
 		ranksep=0.5,
 		splines=false
 	];
 	node [label="\N"];
-	0	[fillcolor="#228B22",
+	0	[fillcolor="#4682B4",
 		height=1.0278,
 		label="petal length (cm) <= 1.90
 gini: 0.653
 samples: 150
 values: [50, 50, 50]",
-		pos="290.88,543",
+		pos="174.5,416.5",
 		shape=rectangle,
 		style="rounded,filled",
 		width=2.191];
-	1	[fillcolor="#AD12AD",
+	1	[fillcolor="#FFD700",
 		height=1.0278,
 		label="gini: 0.0
 samples: 50
 values: [50, 0, 0]
 class: setosa",
-		pos="264.88,416.5",
+		pos="134.5,290",
 		shape=rectangle,
 		style="rounded,filled",
 		width=1.5139];
 	0 -> 1	[label=True,
-		lp="292.18,479.75",
-		pos="e,272.43,453.68 283.28,505.65 280.61,492.87 277.57,478.31 274.74,464.76"];
+		lp="169.64,353.25",
+		pos="e,146.12,327.18 162.82,379.15 158.67,366.24 153.94,351.52 149.55,337.85"];
 	2	[fillcolor="#FF8C00",
 		height=1.0278,
 		label="petal width (cm) <= 1.70
 gini: 0.485
 samples: 100
 values: [0, 50, 50]",
-		pos="418.88,416.5",
+		pos="316.5,290",
 		shape=rectangle,
 		style="rounded,filled",
 		width=2.1493];
 	0 -> 2	[label=False,
-		lp="376.79,479.75",
-		pos="e,381.68,453.68 328.24,505.65 342.44,491.85 358.76,475.97 373.61,461.53"];
+		lp="268.25,353.25",
+		pos="e,275.24,327.18 215.95,379.15 231.85,365.22 250.15,349.18 266.74,334.63"];
 	3	[fillcolor="#4682B4",
 		height=1.0278,
 		label="petal length (cm) <= 4.90
 gini: 0.155
 samples: 54
 values: [0, 49, 5]",
-		pos="312.88,290",
+		pos="196.5,163.5",
 		shape=rectangle,
 		style="rounded,filled",
 		width=2.191];
 	2 -> 3	[label=True,
-		lp="384.97,353.25",
-		pos="e,343.67,327.18 387.93,379.15 376.39,365.6 363.16,350.06 351.05,335.83"];
-	10	[fillcolor="#AD12AD",
+		lp="276.43,226.75",
+		pos="e,231.37,200.68 281.47,252.65 268.28,238.98 253.14,223.26 239.32,208.93"];
+	6	[fillcolor="#FFFFFF",
 		height=1.0278,
 		label="petal length (cm) <= 4.80
 gini: 0.042
 samples: 46
 values: [0, 1, 45]",
-		pos="492.88,290",
+		pos="404.5,163.5",
 		shape=rectangle,
 		style="rounded,filled",
 		width=2.191];
-	2 -> 10	[label=False,
-		lp="474.56,353.25",
-		pos="e,471.37,327.18 440.48,379.15 448.3,365.99 457.25,350.94 465.51,337.04"];
-	4	[fillcolor="#FF8C00",
+	2 -> 6	[label=False,
+		lp="380.02,226.75",
+		pos="e,378.93,200.68 342.19,252.65 351.68,239.23 362.55,223.85 372.53,209.74"];
+	4	[fillcolor="#228B22",
 		height=1.0278,
-		label="sepal length (cm) <= 4.90
-gini: 0.028
+		label="gini: 0.0
 samples: 48
-values: [0, 47, 1]",
-		pos="154.88,163.5",
-		shape=rectangle,
-		style="rounded,filled",
-		width=2.2118];
-	3 -> 4	[label=True,
-		lp="256.08,226.75",
-		pos="e,201.06,200.89 266.75,252.65 248.98,238.65 228.51,222.52 209.98,207.92"];
-	7	[fillcolor="#AD12AD",
-		height=1.0278,
-		label="petal width (cm) <= 1.50
-gini: 0.222
-samples: 6
-values: [0, 2, 4]",
-		pos="333.88,163.5",
-		shape=rectangle,
-		style="rounded,filled",
-		width=2.1493];
-	3 -> 7	[label=False,
-		lp="338.88,226.75",
-		pos="e,327.77,200.68 319.01,252.65 321.16,239.87 323.62,225.31 325.9,211.76"];
-	5	[fillcolor="#FF8C00",
-		height=1.0278,
-		label="gini: 0.0
-samples: 2
-values: [0, 1, 1]
+values: [0, 47, 1]
 class: versicolor",
-		pos="51.875,37",
-		shape=rectangle,
-		style="rounded,filled",
-		width=1.441];
-	4 -> 5	[label=True,
-		lp="122.29,100.25",
-		pos="e,81.803,74.175 124.81,126.15 113.59,112.6 100.73,97.058 88.965,82.832"];
-	6	[fillcolor="#FF8C00",
-		height=1.0278,
-		label="gini: 0.0
-samples: 46
-values: [0, 46, 0]
-class: versicolor",
-		pos="179.88,37",
+		pos="54.5,37",
 		shape=rectangle,
 		style="rounded,filled",
 		width=1.5139];
-	4 -> 6	[label=False,
-		lp="183.12,100.25",
-		pos="e,172.61,74.175 162.17,126.15 164.74,113.37 167.66,98.811 170.39,85.26"];
-	8	[fillcolor="#AD12AD",
+	3 -> 4	[label=True,
+		lp="146.75,100.25",
+		pos="e,95.76,74.175 155.05,126.15 139.15,112.22 120.85,96.176 104.26,81.628"];
+	5	[fillcolor="#FFD700",
 		height=1.0278,
-		label="gini: 0.0
-samples: 3
-values: [0, 0, 3]
+		label="gini: 0.2
+samples: 6
+values: [0, 2, 4]
 class: virginica",
-		pos="320.88,37",
+		pos="210.5,37",
 		shape=rectangle,
 		style="rounded,filled",
 		width=1.4201];
-	7 -> 8	[label=True,
-		lp="340.9,100.25",
-		pos="e,324.65,74.175 330.08,126.15 328.74,113.37 327.22,98.811 325.81,85.26"];
-	9	[fillcolor="#FF8C00",
-		height=1.0278,
-		label="gini: 0.0
-samples: 3
-values: [0, 2, 1]
-class: versicolor",
-		pos="445.88,37",
-		shape=rectangle,
-		style="rounded,filled",
-		width=1.441];
-	7 -> 9	[label=False,
-		lp="410.83,100.25",
-		pos="e,413.33,74.175 366.57,126.15 378.88,112.48 393.01,96.764 405.91,82.43"];
-	11	[fillcolor="#FF8C00",
+	3 -> 5	[label=False,
+		lp="218.59,100.25",
+		pos="e,206.43,74.175 200.59,126.15 202.02,113.37 203.66,98.811 205.19,85.26"];
+	7	[fillcolor="#AD12AD",
 		height=1.0278,
 		label="gini: 0.0
 samples: 3
 values: [0, 1, 2]
 class: virginica",
-		pos="488.88,163.5",
+		pos="376.5,37",
 		shape=rectangle,
 		style="rounded,filled",
 		width=1.4201];
-	10 -> 11	[label=True,
-		lp="503.86,226.75",
-		pos="e,490.04,200.68 491.71,252.65 491.3,240 490.84,225.6 490.41,212.17"];
-	12	[fillcolor="#FFFFFF",
+	6 -> 7	[label=True,
+		lp="404.93,100.25",
+		pos="e,384.64,74.175 396.33,126.15 393.45,113.37 390.18,98.811 387.13,85.26"];
+	8	[fillcolor="#228B22",
 		height=1.0278,
 		label="gini: 0.0
 samples: 43
 values: [0, 0, 43]
 class: virginica",
-		pos="616.88,163.5",
+		pos="532.5,37",
 		shape=rectangle,
 		style="rounded,filled",
 		width=1.5139];
-	10 -> 12	[label=False,
-		lp="576.55,226.75",
-		pos="e,580.85,200.68 529.07,252.65 542.83,238.85 558.64,222.97 573.02,208.53"];
+	6 -> 8	[label=False,
+		lp="490.41,100.25",
+		pos="e,495.31,74.175 441.87,126.15 456.06,112.35 472.39,96.471 487.23,82.029"];
 }

@@ -3,10 +3,10 @@ from graphviz import Digraph
 
 def draw_custom_tree(tree, feature_names=None):
     dot = Digraph()
-    dot.attr(rankdir='TB')  # Tree Top-Bottom chiziladi
-    dot.attr(nodesep='0.3') # Node'lar orasidagi gorizontal masofa
-    dot.attr(ranksep='0.5') # Vertikal masofa
-    dot.attr(splines='false')  # Chiziqlar to‘g‘ri bo‘ladi
+    dot.attr(rankdir='TB')
+    dot.attr(nodesep='0.7')
+    dot.attr(ranksep='0.5')
+    dot.attr(splines='false')
 
     node_id = 0
     class_names = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
