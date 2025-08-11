@@ -3,7 +3,7 @@ import joblib, numpy as np
 from PIL import Image, ImageOps
 
 
-clf = joblib.load("digit_clf.joblib")
+clf = joblib.load("source/digit_clf.joblib")
 
 def to_array(img_path):
     img = Image.open(img_path).convert("L")

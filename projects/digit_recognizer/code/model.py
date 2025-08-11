@@ -20,4 +20,4 @@ clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 print("Accurency Score:", accuracy_score(y_pred, y_test))
 
-joblib.dump(clf,   "digit_clf.joblib")
+joblib.dump(clf, "source/digit_clf.joblib")

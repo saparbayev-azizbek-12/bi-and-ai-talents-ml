@@ -56,8 +56,7 @@ class DecisionTreeClassifierCustom:
         """
         num_samples = X.shape[0]
         num_classes = len(np.unique(y))
-        values = np.bincount(y, minlength=self.n_classes_)  # har bir klassdagi sonlar
-
+        values = np.bincount(y, minlength=self.n_classes_)
 
         # Find best split
         feature_idx, threshold, gain, gini = self._best_split(X, y)
